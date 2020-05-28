@@ -17,5 +17,7 @@ func InitializeRoutes(db *gorm.DB) {
 	router.PATCH("/book/:id", Controllers.Update)
 	router.DELETE("/book/:id", Controllers.Delete)
 	router.GET("/book/:id", Controllers.Fetch)
+	router.POST("/createLanguage", Controllers.CreateLanguage)
+	router.GET("/languages", Controllers.IndexLanguages)
 	_ = router.Run()
 }

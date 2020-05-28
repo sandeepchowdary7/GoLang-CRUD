@@ -22,5 +22,5 @@ func initDb() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&Models.BookModel{})
+	db.AutoMigrate(&Models.Language{}, &Models.BookModel{})
 }
