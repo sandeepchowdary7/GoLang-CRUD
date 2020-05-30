@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
+	"strconv"
 )
 
 func Index(c *gin.Context) {
@@ -42,13 +43,26 @@ func Fetch(c *gin.Context)  {
 
 func Create(c *gin.Context) {
 	dbb := c.MustGet("db").(*gorm.DB)
+	languageID, err := strconv.Atoi(c.PostForm("language_id"))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "data": "Language Id is Empty"})
+		return
+	}
+
 	book := Models.BookModel{
 		Title:  c.PostForm("title"),
 		Author: c.PostForm("author"),
+		LanguageID: languageID,
 	}
 
-	dbb.Save(&book)
-	c.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "message": "Book created successfully!", "bookId": book.ID})
+	if book.Title != "" && book.Author != "" {
+		dbb.Save(&book)
+		c.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "message": "Book created successfully!", "bookId": book.ID})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"status": http.StatusNotFound, "data": "Validation Error."})
+		return
+	}
 }
 
 func Update(c *gin.Context)  {
@@ -63,7 +77,7 @@ func Update(c *gin.Context)  {
 		return
 	}
 
-	dbb.Model(&book).Updates(map[string]interface{}{"title": c.PostForm("title"), "author": c.PostForm("author")})
+	dbb.Model(&book).Updates(map[string]interface{}{"title": c.PostForm("title"), "author": c.PostForm("author"), "language_id": c.PostForm("language_id")})
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Book Updated Successfully!"})
 }
 

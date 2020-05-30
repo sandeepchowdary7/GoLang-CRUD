@@ -38,6 +38,12 @@ func CreateLanguage(c *gin.Context)  {
 		Name: c.PostForm("name"),
 	}
 
-	dbb.Save(&language)
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "Language Created.", "language": language.ID})
+	if language.Name != "" {
+		dbb.Save(&language)
+		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "Language Created.", "language": language.ID})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"status": http.StatusNotFound, "data": "Language Name is Empty."})
+		return
+	}
 }
