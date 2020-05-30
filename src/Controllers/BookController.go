@@ -71,14 +71,20 @@ func Update(c *gin.Context)  {
 	bookId := c.Param("id")
 
 	dbb.First(&book, bookId)
+	languageID, err := strconv.Atoi(c.PostForm("language_id"))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "data": "Language Id is Empty"})
+		return
+	}
 
 	if book.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "data": "Book Not Found"})
 		return
 	}
 
-	dbb.Model(&book).Updates(map[string]interface{}{"title": c.PostForm("title"), "author": c.PostForm("author"), "language_id": c.PostForm("language_id")})
+	dbb.Model(&book).Updates(Models.BookModel{Title: c.PostForm("title"), Author: c.PostForm("author"), LanguageID: languageID})
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Book Updated Successfully!"})
+	return
 }
 
 func Delete(c *gin.Context)  {
