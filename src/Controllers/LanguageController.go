@@ -64,3 +64,34 @@ func DeleteLanguage(c *gin.Context)  {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "Language Deleted."})
 	return
 }
+
+func FetchLanguage(c *gin.Context)  {
+	dbb := c.MustGet("db").(*gorm.DB)
+	var language Models.Language
+	languageId := c.Param("id")
+
+	dbb.Find(&language, languageId)
+	if language.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "data": "No Language Found"})
+		return
+	}
+
+
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": language})
+}
+
+func UpdateLanguage(c *gin.Context)  {
+	dbb := c.MustGet("db").(*gorm.DB)
+	var language Models.Language
+	languageId := c.Param("id")
+
+	dbb.Find(&language, languageId)
+
+	if language.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "data": "Language Not Found"})
+		return
+	}
+	dbb.Model(&language).Updates(Models.Language{Name: c.PostForm("name")})
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Language Updated Successfully!"})
+	return
+}
